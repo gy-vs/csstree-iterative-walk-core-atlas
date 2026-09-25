@@ -131,20 +131,13 @@
     },
     "unclosed unknown functional-pseudo in selector": {
         "source": " foo:bar(x {}",
-        "generate": "foo:bar(x{}",
+        "generate": "foo:bar(x {}",
         "ast": {
             "type": "StyleSheet",
             "children": [
                 {
-                    "type": "Rule",
-                    "prelude": {
-                        "type": "Raw",
-                        "value": "foo:bar(x"
-                    },
-                    "block": {
-                        "type": "Block",
-                        "children": []
-                    }
+                    "type": "Raw",
+                    "value": "foo:bar(x {}"
                 }
             ]
         }
@@ -377,5 +370,60 @@
                 ]
             }
         }
-    ]
+    ],
+    "parser should respect bracket balance over stop token": {
+        "source": ".a{--x:(;color:green;}.b{color:red;--y:});width:10px}",
+        "generate": ".a{--x:(;color:green;}.b{color:red;--y:});width:10px}",
+        "ast": {
+            "type": "StyleSheet",
+            "children": [
+                {
+                    "type": "Rule",
+                    "prelude": {
+                        "type": "SelectorList",
+                        "children": [
+                            {
+                                "type": "Selector",
+                                "children": [
+                                    {
+                                        "type": "ClassSelector",
+                                        "name": "a"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "block": {
+                        "type": "Block",
+                        "children": [
+                            {
+                                "type": "Declaration",
+                                "important": false,
+                                "property": "--x",
+                                "value": {
+                                    "type": "Raw",
+                                    "value": "(;color:green;}.b{color:red;--y:})"
+                                }
+                            },
+                            {
+                                "type": "Declaration",
+                                "important": false,
+                                "property": "width",
+                                "value": {
+                                    "type": "Value",
+                                    "children": [
+                                        {
+                                            "type": "Dimension",
+                                            "value": "10",
+                                            "unit": "px"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
 }
